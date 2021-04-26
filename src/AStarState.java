@@ -65,23 +65,24 @@ public class AStarState
      **/
     public boolean addOpenWaypoint(Waypoint newWP)
     {
-        if (!openWP.containsKey(newWP.getLocation())){
+        if(openWP.containsKey(newWP.getLocation()) && openWP.get(newWP.getLocation()).getPreviousCost()>newWP.getPreviousCost()){
             openWP.put(newWP.getLocation(),newWP);
             return true;
-        }
-        else if(openWP.get(newWP.getLocation()).getPreviousCost()>newWP.getPreviousCost()){
-            openWP.remove(newWP.getLocation());
+        }else
+        if(!openWP.containsKey(newWP.getLocation())){
             openWP.put(newWP.getLocation(),newWP);
             return true;
-        }
-        else return false;
+        }else return false;
     }
 
 
     /** Returns the current number of open waypoints. **/
     public int numOpenWaypoints()
     {
-        return openWP.size();
+        if (openWP.isEmpty())
+            return 0;
+        else
+            return openWP.size();
     }
 
 
