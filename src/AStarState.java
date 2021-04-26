@@ -1,3 +1,5 @@
+import java.util.HashMap;
+
 /**
  * This class stores the basic state necessary for the A* algorithm to compute a
  * path across a map.  This state includes a collection of "open waypoints" and
@@ -5,12 +7,13 @@
  * the basic operations that the A* pathfinding algorithm needs to perform its
  * processing.
  **/
-import java.util.HashMap;
 public class AStarState
 {
     /** This is a reference to the map that the A* algorithm is navigating. **/
     private Map2D map;
 
+    private HashMap<Location, Waypoint> openWaypoints = new HashMap<Location, Waypoint>();
+    private HashMap<Location, Waypoint> closeWaypoints = new HashMap<Location, Waypoint>();
 
     /**
      * Initialize a new state object for the A* pathfinding algorithm to use.
@@ -34,23 +37,21 @@ public class AStarState
      * with the minimum total cost.  If there are no open waypoints, this method
      * returns <code>null</code>.
      **/
-    private HashMap<Location, Waypoint> openWP = new HashMap<Location, Waypoint>();
-    private HashMap<Location, Waypoint> closeWP = new HashMap<Location, Waypoint>();
-
     public Waypoint getMinOpenWaypoint()
     {
-        if (openWP.isEmpty())
-            return null;
-        else {
-            float min = Float.MAX_VALUE;
-            Location loc = new Location();
-            for (Location key : openWP.keySet()) {
-                if (openWP.get(key).getTotalCost()<min)
-                    min = openWP.get(key).getTotalCost();
-                    loc = openWP.get(key).getLocation();
 
+        if (numOpenWaypoints() == 0)
+            return null;
+        else{
+            float min_cost = Float.MAX_VALUE;
+            Location loc = new Location();
+            for(Waypoint point : openWaypoints.values()) {
+                if (point.getTotalCost() < min_cost){
+                    loc = point.getLocation();
+                    min_cost = point.getTotalCost();
+                }
             }
-            return openWP.get(loc);
+            return openWaypoints.get(loc);
         }
     }
 
@@ -65,23 +66,30 @@ public class AStarState
      **/
     public boolean addOpenWaypoint(Waypoint newWP)
     {
-        if (!openWP.containsKey(newWP.getLocation())){
-            openWP.put(newWP.getLocation(),newWP);
-            return true;
+        Location loc = newWP.getLocation();
+        if (openWaypoints.containsKey(loc)){
+            Waypoint current_waypoint = openWaypoints.get(loc);
+            if (newWP.getPreviousCost() < current_waypoint.getPreviousCost())
+            {
+                openWaypoints.put(loc, newWP);
+                return true;
+            }
+            return false;
         }
-        else if(openWP.get(newWP.getLocation()).getPreviousCost()>newWP.getPreviousCost()){
-            openWP.remove(newWP.getLocation());
-            openWP.put(newWP.getLocation(),newWP);
-            return true;
-        }
-        else return false;
+
+        openWaypoints.put(loc, newWP);
+        return true;
+
     }
 
 
     /** Returns the current number of open waypoints. **/
     public int numOpenWaypoints()
     {
-        return openWP.size();
+        if (openWaypoints.isEmpty())
+            return 0;
+        else
+            return openWaypoints.size();
     }
 
 
@@ -91,9 +99,9 @@ public class AStarState
      **/
     public void closeWaypoint(Location loc)
     {
-        Waypoint WP = openWP.get(loc);
-        openWP.remove(loc);
-        closeWP.put(loc, WP);
+        Waypoint newClosedWP = openWaypoints.get(loc);
+        closeWaypoints.put(loc, newClosedWP);
+        openWaypoints.remove(loc);
     }
 
     /**
@@ -102,8 +110,10 @@ public class AStarState
      **/
     public boolean isLocationClosed(Location loc)
     {
-        if (closeWP.containsKey(loc))
-            return true;
-        else return false;
+        for (Waypoint point : closeWaypoints.values())
+            if (loc.equals(point.getLocation())){
+                return true;
+            }
+        return false;
     }
 }
