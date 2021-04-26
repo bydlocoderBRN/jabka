@@ -45,9 +45,10 @@ public class AStarState
             float min = Float.MAX_VALUE;
             Location loc = new Location();
             for (Location key : openWP.keySet()) {
-                if (openWP.get(key).getTotalCost()<min)
+                if (openWP.get(key).getTotalCost()<min){
                     min = openWP.get(key).getTotalCost();
                     loc = openWP.get(key).getLocation();
+                }
 
             }
             return openWP.get(loc);
