@@ -12,6 +12,7 @@ public class FractalExplorer {
         size_fractal=size;
         fractalGenerator = new Mandelbrot();
         content = new JImageDisplay(size_fractal,size_fractal);
+        rect = new Rectangle2D.Double();
         fractalGenerator.getInitialRange(rect);
 
     }
@@ -35,8 +36,8 @@ public class FractalExplorer {
         double yCoord;
         float hue;
         int rgbColor;
-        for (int x= 0; x == size_fractal; x++){
-            for (int y = 0; y == size_fractal; y++){
+        for (int x= 0; x <size_fractal; x++){
+            for (int y = 0; y < size_fractal; y++){
                 xCoord = FractalGenerator.getCoord (rect.x, rect.x + rect.width,
                         size_fractal, x);
                 yCoord = FractalGenerator.getCoord (rect.y, rect.y + rect.height,
